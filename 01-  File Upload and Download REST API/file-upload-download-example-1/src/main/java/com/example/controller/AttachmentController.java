@@ -1,10 +1,13 @@
 package com.example.controller;
 
+import com.example.entity.Attachment;
 import com.example.payload.UploadFileResponse;
 import com.example.service.IAttachmentService;
+import com.example.util.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -83,6 +86,18 @@ public class AttachmentController {
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+    }
+
+
+    @GetMapping("/downloadFile/{fileId}")
+    public ResponseEntity<Resource> downloadFileFromDatabase(@PathVariable String fileId) {
+        // Load file from database
+        Attachment dbFile = iAttachmentService.loadFileAsResourceFromDatabase(fileId);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(dbFile.getFileType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + dbFile.getFileName() + "\"")
+                .body(new ByteArrayResource(ImageUtils.decompressImage(dbFile.getData())));
     }
 
 }

@@ -36,8 +36,8 @@ public class Attachment {
     private String filePath;
 
     // to store complete file in data base as byte
-    //    @Lob
-    //    @Column(name = "data")
-    //    private byte[] data;
+        @Lob
+        @Column(name = "data")
+        private byte[] data;
 
 }
