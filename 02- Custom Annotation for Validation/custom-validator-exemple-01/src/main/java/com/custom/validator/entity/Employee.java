@@ -1,5 +1,6 @@
 package com.custom.validator.entity;
 
+import com.custom.validator.validation.ValidationEmployeeType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,5 +40,6 @@ public class Employee {
     private String email;
 
     //custom annotation
+    @ValidationEmployeeType
     private String employeeType; //permanent or vendor or contractual
 }
