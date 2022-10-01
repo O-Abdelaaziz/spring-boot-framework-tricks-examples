@@ -13,11 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
  **/
 public interface IAttachmentService {
 
-    public String storeFile(MultipartFile file);
+    public String uploadFile(MultipartFile file);
 
-    public String storeFileToDatabase(MultipartFile file);
-
-    public Resource loadFileAsResource(String fileName);
-
-    public Attachment loadFileAsResourceFromDatabase(String fileName);
+    public Resource downloadFile(String fileName);
 }

@@ -8,6 +8,7 @@ import com.example.repository.AttachmentRepository;
 import com.example.service.IAttachmentService;
 import com.example.util.ImageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -30,13 +31,13 @@ import java.util.Optional;
  * @Author Abdelaaziz Ouakala
  **/
 @Service
-public class AttachmentServiceImpl implements IAttachmentService {
+public class FileSystemStoreServiceImpl implements IAttachmentService {
 
     private final Path fileStorageLocation;
     private AttachmentRepository attachmentRepository;
 
     @Autowired
-    public AttachmentServiceImpl(AttachmentRepository attachmentRepository, FileStorageProperties fileStorageProperties) {
+    public FileSystemStoreServiceImpl(AttachmentRepository attachmentRepository, FileStorageProperties fileStorageProperties) {
         this.attachmentRepository = attachmentRepository;
         this.fileStorageLocation = Paths.get(fileStorageProperties.getUploadDir())
                 .toAbsolutePath().normalize();
@@ -49,7 +50,7 @@ public class AttachmentServiceImpl implements IAttachmentService {
     }
 
     @Override
-    public String storeFile(MultipartFile file) {
+    public String uploadFile(MultipartFile file) {
         // Normalize file name
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 
@@ -78,32 +79,7 @@ public class AttachmentServiceImpl implements IAttachmentService {
     }
 
     @Override
-    public String storeFileToDatabase(MultipartFile file) {
-        // Normalize file name
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-
-        try {
-            // Check if the file's name contains invalid characters
-            if (fileName.contains("..")) {
-                throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
-            }
-
-            Attachment attachment = attachmentRepository.save(
-                    Attachment.builder()
-                            .fileName(file.getOriginalFilename())
-                            .fileType(file.getContentType())
-                            .data(ImageUtils.compressImage(file.getBytes())).build());
-            if (attachment != null) {
-                return "File uploaded successfully : " + attachment.getFileName();
-            }
-            return null;
-        } catch (IOException ex) {
-            throw new FileStorageException("Could not store file " + fileName + ". Please try again!", ex);
-        }
-    }
-
-    @Override
-    public Resource loadFileAsResource(String fileName) {
+    public Resource downloadFile(String fileName) {
         try {
             //Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
             Optional<Attachment> attachment = attachmentRepository.findByFileName(fileName);
@@ -117,11 +93,5 @@ public class AttachmentServiceImpl implements IAttachmentService {
         } catch (MalformedURLException ex) {
             throw new FileNotFoundException("File not found " + fileName, ex);
         }
-    }
-
-    @Override
-    public Attachment loadFileAsResourceFromDatabase(String fileName) {
-        return attachmentRepository.findByFileName(fileName)
-                .orElseThrow(() -> new FileNotFoundException("File not found with id " + fileName));
     }
 }

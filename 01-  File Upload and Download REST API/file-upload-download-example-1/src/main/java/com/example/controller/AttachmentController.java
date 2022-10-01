@@ -45,7 +45,7 @@ public class AttachmentController {
 
     @PostMapping("/uploadFile")
     public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
-        String fileName = iAttachmentService.storeFile(file);
+        String fileName = iAttachmentService.uploadFile(file);
 
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/v1/attachments/downloadFile/")
@@ -67,7 +67,7 @@ public class AttachmentController {
     @GetMapping("/downloadFile/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName, HttpServletRequest request) {
         // Load file as Resource
-        Resource resource = iAttachmentService.loadFileAsResource(fileName);
+        Resource resource = iAttachmentService.downloadFile(fileName);
 
         // Try to determine file's content type
         String contentType = null;
@@ -87,17 +87,4 @@ public class AttachmentController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
-
-
-    @GetMapping("/downloadFile/{fileId}")
-    public ResponseEntity<Resource> downloadFileFromDatabase(@PathVariable String fileId) {
-        // Load file from database
-        Attachment dbFile = iAttachmentService.loadFileAsResourceFromDatabase(fileId);
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(dbFile.getFileType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + dbFile.getFileName() + "\"")
-                .body(new ByteArrayResource(ImageUtils.decompressImage(dbFile.getData())));
-    }
-
 }
