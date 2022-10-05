@@ -2,6 +2,7 @@ package com.datatransferobjectmanual.service.impl;
 
 import com.datatransferobjectmanual.entity.Address;
 import com.datatransferobjectmanual.entity.User;
+import com.datatransferobjectmanual.mapper.AddressMapper;
 import com.datatransferobjectmanual.repository.AddressRepository;
 import com.datatransferobjectmanual.repository.UserRepository;
 import com.datatransferobjectmanual.service.IAddressService;
@@ -53,7 +54,24 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     @Override
+    public List<Address> findByUserId(Long userId) {
+        User user = userRepository.findById(userId).get();
+        if (Objects.isNull(user)) {
+            throw new RuntimeException("user can not be found!");
+        }
+        List<Address> addressList = addressRepository.findByUser_Id(userId);
+        return addressList;
+    }
+
+    @Override
     public Address save(Address address) {
+        if (address.getUserId() != null) {
+            User user = userRepository.findById(address.getUserId()).get();
+            if (Objects.isNull(user)) {
+                throw new RuntimeException("user can not be found!");
+            }
+            address.setUser(user);
+        }
         return addressRepository.save(address);
     }
 
@@ -62,19 +80,14 @@ public class AddressServiceImpl implements IAddressService {
         Address getAddress = addressRepository.findById(id).get();
 
 
-        User getUser = userRepository.findById(address.getUser().getId()).get();
+        User getUser = userRepository.findById(address.getUserId()).get();
         if (Objects.isNull(getUser)) {
             throw new RuntimeException("user can not be found!");
         }
 
-        getAddress.setCountry(address.getCountry());
-        getAddress.setCity(address.getCity());
-        getAddress.setAddress1(address.getAddress1());
-        getAddress.setAddress2(address.getAddress2());
-        getAddress.setAddress3(address.getAddress3());
-        getAddress.setUser(getUser);
+        Address mapAddress = AddressMapper.toUpdateAddress(getAddress, address);
 
-        Address updatedAddress = addressRepository.save(getAddress);
+        Address updatedAddress = addressRepository.save(mapAddress);
         return updatedAddress;
     }
 

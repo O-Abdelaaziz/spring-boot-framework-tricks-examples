@@ -4,6 +4,8 @@ import com.datatransferobjectmanual.entity.Address;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @Created 02/10/2022 - 14:28
  * @Package com.datatransferobjectmanual.repository
@@ -13,4 +15,5 @@ import org.springframework.stereotype.Repository;
  **/
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long> {
+    List<Address> findByUser_Id(Long userId);
 }

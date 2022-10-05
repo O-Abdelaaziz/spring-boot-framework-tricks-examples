@@ -1,6 +1,8 @@
 package com.datatransferobjectmanual.controller;
 
 import com.datatransferobjectmanual.entity.User;
+import com.datatransferobjectmanual.mapper.UserDto;
+import com.datatransferobjectmanual.mapper.UserMapper;
 import com.datatransferobjectmanual.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,39 +38,40 @@ public class UserController {
     }
 
     @GetMapping
-    private ResponseEntity<List<User>> getUsersList() {
-        return new ResponseEntity<>(iUserService.findAll(), HttpStatus.OK);
+    private ResponseEntity<List<UserDto>> getUsersList() {
+        return new ResponseEntity<>(UserMapper.toUsersDtos(iUserService.findAll()), HttpStatus.OK);
     }
 
     @GetMapping("/username/{username}")
-    private ResponseEntity<User> getUserByUsername(@PathVariable(name = "username") String username) {
-        return new ResponseEntity<>(iUserService.findByUsername(username), HttpStatus.OK);
+    private ResponseEntity<UserDto> getUserByUsername(@PathVariable(name = "username") String username) {
+        return new ResponseEntity<>(UserMapper.toUserDto(iUserService.findByUsername(username)), HttpStatus.OK);
     }
 
     @GetMapping("/email/{email}")
-    private ResponseEntity<User> getUserByEmail(@PathVariable(name = "email") String email) {
-        return new ResponseEntity<>(iUserService.findByEmail(email), HttpStatus.OK);
+    private ResponseEntity<UserDto> getUserByEmail(@PathVariable(name = "email") String email) {
+        return new ResponseEntity<>(UserMapper.toUserDto(iUserService.findByEmail(email)), HttpStatus.OK);
     }
 
     @PostMapping
-    private ResponseEntity<User> saveUser(@RequestBody @Valid User user) {
+    private ResponseEntity<UserDto> saveUser(@RequestBody @Valid User user) {
         User savedUser = iUserService.save(user);
+        UserDto userDto = UserMapper.toUserDto(savedUser);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/username/{username}")
-                .buildAndExpand(savedUser.getUsername())
+                .buildAndExpand(userDto.getUsername())
                 .toUri();
-        return ResponseEntity.created(location).body(savedUser);
+        return ResponseEntity.created(location).body(userDto);
     }
 
     @PutMapping("/{id}")
-    private ResponseEntity<User> updateUser(@PathVariable(name = "id") Long id, @RequestBody @Valid User user) {
-        User savedUser = iUserService.update(id,
-                user);
+    private ResponseEntity<UserDto> updateUser(@PathVariable(name = "id") Long id, @RequestBody @Valid User user) {
+        User savedUser = iUserService.update(id, user);
+        UserDto userDto = UserMapper.toUserDto(savedUser);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/username/{username}")
-                .buildAndExpand(savedUser.getUsername())
+                .buildAndExpand(userDto.getUsername())
                 .toUri();
-        return ResponseEntity.created(location).body(savedUser);
+        return ResponseEntity.created(location).body(userDto);
     }
 
     @DeleteMapping("/{id}")

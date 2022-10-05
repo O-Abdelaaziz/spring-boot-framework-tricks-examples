@@ -45,4 +45,9 @@ public class Address {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @Transient
+    private Long userId;
+
+
 }

@@ -16,6 +16,8 @@ public interface IAddressService {
 
     public Address findById(Long id);
 
+    List<Address> findByUserId(Long userId);
+
     public Address save(Address address);
 
     public Address update(Long id, Address address);
