@@ -32,13 +32,12 @@ public class MovieRepositoryTest {
     @Autowired
     private MovieRepository movieRepository;
 
-    @Test
-    @DisplayName("Get movies list")
-    @Order(1)
-    public void testGetListOfMovies() {
+    private Movie avatarMovie;
+    private Movie titanicMovie;
 
-        //Arrange :: Given
-        Movie avatarMovie = new Movie();
+    @BeforeEach
+    private void init() {
+        avatarMovie = new Movie();
         avatarMovie.setTitle("Avatar");
         avatarMovie.setOverview("You will love this movie");
         avatarMovie.setHomePage("www.avatar.com");
@@ -46,9 +45,8 @@ public class MovieRepositoryTest {
         avatarMovie.setRuntime(160);
         avatarMovie.setReleaseDate("15-01-2010");
         avatarMovie.setVoteAverage(7.2);
-        movieRepository.save(avatarMovie);
 
-        Movie titanicMovie = new Movie();
+        titanicMovie = new Movie();
         titanicMovie.setTitle("Titanic");
         titanicMovie.setOverview("You will love this movie");
         titanicMovie.setHomePage("www.titanic.com");
@@ -56,13 +54,23 @@ public class MovieRepositoryTest {
         titanicMovie.setRuntime(143);
         titanicMovie.setReleaseDate("25-04-1999");
         titanicMovie.setVoteAverage(7.4);
+    }
+
+    @Test
+    @DisplayName("Get movies list")
+    @Order(1)
+    public void testGetListOfMovies() {
+
+        //Arrange :: Given
+
+        movieRepository.save(avatarMovie);
         movieRepository.save(titanicMovie);
 
         //Act :: When
         List<Movie> movieList = movieRepository.findAll();
 
         //Assert :: Then
-//        assertNotNull(movieList);
+        //assertNotNull(movieList);
         Assertions.assertThat(movieList).isNotNull();
         assertFalse(movieList.isEmpty(), "The returned movies list it's can't be empty");
         assertEquals(2, movieList.size(), "The returned movies list size is not equals");
@@ -73,14 +81,6 @@ public class MovieRepositoryTest {
     @Order(2)
     public void testGetMovieById_whenValidMovieIdProvided_returnMovieDetails() {
         //Arrange :: Given
-        Movie avatarMovie = new Movie();
-        avatarMovie.setTitle("Avatar");
-        avatarMovie.setOverview("You will love this movie");
-        avatarMovie.setHomePage("www.avatar.com");
-        avatarMovie.setGenera("Fantasy");
-        avatarMovie.setRuntime(160);
-        avatarMovie.setReleaseDate("15-01-2010");
-        avatarMovie.setVoteAverage(7.2);
         movieRepository.save(avatarMovie);
 
         //Act :: When
@@ -99,23 +99,15 @@ public class MovieRepositoryTest {
     public void testCreateMovie_whenValidMovieDetailsProvided_returnsCreatedMovieDetails() {
 
         //Arrange :: Given
-        Movie movie = new Movie();
-        movie.setTitle("Avatar");
-        movie.setOverview("You will love this movie");
-        movie.setHomePage("www.avatar.com");
-        movie.setGenera("");
-        movie.setRuntime(160);
-        movie.setReleaseDate("15-01-2010");
-        movie.setVoteAverage(7.2);
-
+        // replacement happen here
         //Act :: When
-        Movie createdMovie = movieRepository.save(movie);
+        Movie createdMovie = movieRepository.save(avatarMovie);
 
         //Assert :: Then
         assertNotNull(createdMovie);
         assertThat(createdMovie.getId()).isNotNull();
-        assertEquals(movie.getTitle(), createdMovie.getTitle(), "The returned movie title is mostly incorrect");
-        assertEquals(movie.getVoteAverage(), createdMovie.getVoteAverage(), "The returned movie vote average is mostly incorrect");
+        assertEquals(avatarMovie.getTitle(), createdMovie.getTitle(), "The returned movie title is mostly incorrect");
+        assertEquals(avatarMovie.getVoteAverage(), createdMovie.getVoteAverage(), "The returned movie vote average is mostly incorrect");
     }
 
     @Test
@@ -123,14 +115,6 @@ public class MovieRepositoryTest {
     @Order(4)
     public void testUpdateMovie_whenValidMovieDetailsProvided_returnsUpdatedMovieDetails() {
         //Arrange :: Given
-        Movie avatarMovie = new Movie();
-        avatarMovie.setTitle("Avatar");
-        avatarMovie.setOverview("You will love this movie");
-        avatarMovie.setHomePage("www.avatar.com");
-        avatarMovie.setGenera("Fantasy,Adventure");
-        avatarMovie.setRuntime(160);
-        avatarMovie.setReleaseDate("15-01-2010");
-        avatarMovie.setVoteAverage(7.2);
         movieRepository.save(avatarMovie);
 
         //Act :: When
@@ -155,14 +139,6 @@ public class MovieRepositoryTest {
     @Order(5)
     public void testDeletedMovie_whenValidMovieIdProvided_returnsDeletedMovieMessage() {
         //Arrange :: Given
-        Movie avatarMovie = new Movie();
-        avatarMovie.setTitle("Avatar");
-        avatarMovie.setOverview("You will love this movie");
-        avatarMovie.setHomePage("www.avatar.com");
-        avatarMovie.setGenera("Fantasy,Adventure");
-        avatarMovie.setRuntime(160);
-        avatarMovie.setReleaseDate("15-01-2010");
-        avatarMovie.setVoteAverage(7.2);
         movieRepository.save(avatarMovie);
 
         //Act :: When
