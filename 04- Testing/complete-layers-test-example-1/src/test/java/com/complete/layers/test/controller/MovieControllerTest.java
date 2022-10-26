@@ -4,10 +4,7 @@ import com.complete.layers.test.model.Movie;
 import com.complete.layers.test.service.IMovieService;
 import com.complete.layers.test.service.impl.MovieServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -51,11 +48,13 @@ public class MovieControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Test
-    @DisplayName("Get movies list")
-    @Order(1)
-    public void testGetListOfMovies() throws Exception {
-        Movie avatarMovie = new Movie();
+    private Movie avatarMovie;
+    private Movie titanicMovie;
+
+    @BeforeEach
+    private void init() {
+        avatarMovie = new Movie();
+        avatarMovie.setId(1L);
         avatarMovie.setTitle("Avatar");
         avatarMovie.setOverview("You will love this movie");
         avatarMovie.setHomePage("www.avatar.com");
@@ -64,7 +63,8 @@ public class MovieControllerTest {
         avatarMovie.setReleaseDate("15-01-2010");
         avatarMovie.setVoteAverage(7.2);
 
-        Movie titanicMovie = new Movie();
+        titanicMovie = new Movie();
+        titanicMovie.setId(1L);
         titanicMovie.setTitle("Titanic");
         titanicMovie.setOverview("You will love this movie");
         titanicMovie.setHomePage("www.titanic.com");
@@ -72,6 +72,12 @@ public class MovieControllerTest {
         titanicMovie.setRuntime(143);
         titanicMovie.setReleaseDate("25-04-1999");
         titanicMovie.setVoteAverage(7.4);
+    }
+
+    @Test
+    @DisplayName("Get movies list")
+    @Order(1)
+    public void testGetListOfMovies() throws Exception {
 
         List<Movie> movies = new ArrayList<>();
         movies.add(avatarMovie);
@@ -109,20 +115,9 @@ public class MovieControllerTest {
     @DisplayName("Get movie by id")
     @Order(2)
     public void testGetMovieById_whenValidMovieIdProvided_returnMovieDetails() throws Exception {
-        //Arrange :: Given
-        Movie avatarMovie = new Movie();
-        avatarMovie.setId(1L);
-        avatarMovie.setTitle("Avatar");
-        avatarMovie.setOverview("You will love this movie");
-        avatarMovie.setHomePage("www.avatar.com");
-        avatarMovie.setGenera("Fantasy");
-        avatarMovie.setRuntime(160);
-        avatarMovie.setReleaseDate("15-01-2010");
-        avatarMovie.setVoteAverage(7.2);
 
         Mockito.when(movieService.getMoveById(anyLong())).thenReturn(avatarMovie);
 
-        //Act :: When
         mockMvc.perform(get("/api/v1/movies/{id}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title", is(avatarMovie.getTitle())))
@@ -133,15 +128,6 @@ public class MovieControllerTest {
     @DisplayName("Movie can be created")
     @Order(3)
     public void testCreateMovie_whenValidMovieDetailsProvided_returnsCreatedMovieDetails() throws Exception {
-        Movie avatarMovie = new Movie();
-        avatarMovie.setId(1L);
-        avatarMovie.setTitle("Avatar");
-        avatarMovie.setOverview("You will love this movie");
-        avatarMovie.setHomePage("www.avatar.com");
-        avatarMovie.setGenera("Fantasy");
-        avatarMovie.setRuntime(160);
-        avatarMovie.setReleaseDate("15-01-2010");
-        avatarMovie.setVoteAverage(7.2);
 
         Mockito.when(movieService.save(Mockito.any(Movie.class))).thenReturn(avatarMovie);
 
@@ -168,15 +154,6 @@ public class MovieControllerTest {
     @DisplayName("Movie can be updated")
     @Order(4)
     public void testUpdateMovie_whenValidMovieDetailsProvided_returnsUpdatedMovieDetails() throws Exception {
-        Movie avatarMovie = new Movie();
-        avatarMovie.setId(1L);
-        avatarMovie.setTitle("Avatar");
-        avatarMovie.setOverview("You will love this movie");
-        avatarMovie.setHomePage("www.avatar.com");
-        avatarMovie.setGenera("Fantasy");
-        avatarMovie.setRuntime(160);
-        avatarMovie.setReleaseDate("15-01-2010");
-        avatarMovie.setVoteAverage(7.2);
 
         Mockito.when(movieService.update(anyLong(), Mockito.any(Movie.class))).thenReturn(avatarMovie);
 
@@ -199,15 +176,6 @@ public class MovieControllerTest {
     @DisplayName("Movie can be deleted")
     @Order(5)
     public void testDeletedMovie_whenValidMovieIdProvided_returnsDeletedMovieMessage() throws Exception {
-        Movie avatarMovie = new Movie();
-        avatarMovie.setId(1L);
-        avatarMovie.setTitle("Avatar");
-        avatarMovie.setOverview("You will love this movie");
-        avatarMovie.setHomePage("www.avatar.com");
-        avatarMovie.setGenera("Fantasy");
-        avatarMovie.setRuntime(160);
-        avatarMovie.setReleaseDate("15-01-2010");
-        avatarMovie.setVoteAverage(7.2);
 
         Mockito.doNothing().when(movieService).delete(anyLong());
 
