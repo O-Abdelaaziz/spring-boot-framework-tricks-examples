@@ -58,14 +58,14 @@ public class MovieServiceImpl implements IMovieService {
     @Override
     public Movie update(Long id, Movie movie) {
         Movie getMovie = getMoveById(id);
-        getMovie.setId(getMovie.getId());
-        getMovie.setTitle(getMovie.getTitle());
-        getMovie.setOverview(getMovie.getOverview());
-        getMovie.setHomePage(getMovie.getHomePage());
-        getMovie.setGenera(getMovie.getGenera());
-        getMovie.setRuntime(getMovie.getRuntime());
-        getMovie.setReleaseDate(getMovie.getReleaseDate());
-        getMovie.setVoteAverage(getMovie.getVoteAverage());
+
+        getMovie.setTitle(movie.getTitle());
+        getMovie.setOverview(movie.getOverview());
+        getMovie.setHomePage(movie.getHomePage());
+        getMovie.setGenera(movie.getGenera());
+        getMovie.setRuntime(movie.getRuntime());
+        getMovie.setReleaseDate(movie.getReleaseDate());
+        getMovie.setVoteAverage(movie.getVoteAverage());
 
         Movie updatedMovie = movieRepository.save(getMovie);
         log.info("Movie has been updated successfully with title: " + updatedMovie.getTitle());
